@@ -728,9 +728,21 @@ BOOL AX_WEB_VIEW_CONTROLLER_iOS10_0_AVAILABLE() { return AX_WEB_VIEW_CONTROLLER_
     CGContextFillRect(context, rect);
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    UIImage* backItemHlImage = newImage?:[[UIImage imageNamed:@"backItemImage-hl" inBundle:self.resourceBundle compatibleWithTraitCollection:nil] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* backItemHlImage = newImage?:[[UIImage imageNamed:@"return_b.png" inBundle:self.resourceBundle compatibleWithTraitCollection:nil] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     UIButton* backButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [backButton setTitle:@"" forState:UIControlStateNormal];
+    NSDictionary *attr = [[UIBarButtonItem appearance] titleTextAttributesForState:UIControlStateNormal];
+    NSString *backBarButtonItemTitleString = self.showsNavigationBackBarButtonItemTitle ? AXWebViewControllerLocalizedString(@"back", @"back") : @" ";
+    if (attr) {
+        [backButton setAttributedTitle:[[NSAttributedString alloc] initWithString:backBarButtonItemTitleString attributes:attr] forState:UIControlStateNormal];
+        UIOffset offset = [[UIBarButtonItem appearance] backButtonTitlePositionAdjustmentForBarMetrics:UIBarMetricsDefault];
+        backButton.titleEdgeInsets = UIEdgeInsetsMake(offset.vertical, offset.horizontal, 0, 0);
+        backButton.imageEdgeInsets = UIEdgeInsetsMake(offset.vertical, offset.horizontal, 0, 0);
+    } else {
+        [backButton setTitle:backBarButtonItemTitleString forState:UIControlStateNormal];
+        [backButton setTitleColor:self.navigationController.navigationBar.tintColor forState:UIControlStateNormal];
+        [backButton setTitleColor:[self.navigationController.navigationBar.tintColor colorWithAlphaComponent:0.5] forState:UIControlStateHighlighted];
+        [backButton.titleLabel setFont:[UIFont systemFontOfSize:17]];
+    }
     [backButton setImage:backItemImage forState:UIControlStateNormal];
     [backButton setImage:backItemHlImage forState:UIControlStateHighlighted];
     [backButton sizeToFit];
